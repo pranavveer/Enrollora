@@ -7,7 +7,7 @@ using Enrollora.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -90,12 +90,12 @@ app.UseCors("AngularClient");
 app.UseAuthentication();
 app.UseAuthorization();
 
-if (app.Environment.IsDevelopment())
-{
+if (app.Environment.IsDevelopment()){
     app.UseSwagger();
-    app.UseSwaggerUI();
-}
 
+    app.MapScalarApiReference(options =>
+        options.WithOpenApiRoutePattern("/swagger/v1/swagger.json"));
+}
 app.MapControllers();
 
 await DbSeeder.SeedAsync(app.Services, app.Configuration);

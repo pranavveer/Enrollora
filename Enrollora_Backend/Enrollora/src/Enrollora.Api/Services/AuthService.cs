@@ -52,12 +52,21 @@ public sealed class AuthService(
         if (student is null || !hasher.Verify(student.PasswordHash, request.Password))
             throw new UnauthorizedAccessException("Invalid email or password.");
 
-        if (student.Status == StudentStatus.Pending)
-            throw new UnauthorizedAccessException("Your account is pending administrator approval.");
+        if (student.Status != StudentStatus.Approved)
+        {
+            var message = student.Status switch
+            {
+                StudentStatus.Pending =>
+                    "Your account is pending administrator approval.",
 
-        if (student.Status == StudentStatus.Rejected)
-            throw new UnauthorizedAccessException("Your registration was rejected. Contact the administrator.");
+                StudentStatus.Rejected =>
+                    "Your registration was rejected. Contact the administrator.",
 
+                _ => "Your account is not active. Contact the administrator."
+            };
+
+            throw new UnauthorizedAccessException(message);
+        }
         return tokens.CreateToken(
             student.StudentId.ToString(), student.Name, student.Email, "Student");
     }
