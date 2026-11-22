@@ -1,12 +1,31 @@
-# .NET
+
+# .NET build files
 **/bin/
 **/obj/
 **/.vs/
+*.user
+*.suo
 
 # Angular
 **/node_modules/
 **/dist/
 **/.angular/
+**/coverage/
 
-# Environment
+# Environment files and secrets
 **/.env
+**/.env.*
+!**/.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# Temporary files
+*.tmp
+*.temp
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini

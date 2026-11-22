@@ -1,3 +1,50 @@
+# Enrollora
+
+## About the Project
+Enrollora is a student enrollment and management application designed to simplify student registration, record management, and enrollment-related processes through a user-friendly interface and secure backend.
+
+## Features
+- Student registration and management
+- Secure authentication using JWT
+- RESTful API architecture
+- SQL Server database integration
+- Student information validation
+- Backend API documentation
+
+## Tech Stack
+
+### Backend
+- ASP.NET Core Web API (.NET 10)
+- C#
+- Entity Framework Core
+- SQL Server
+- JWT Authentication
+
+### Frontend
+- [Add your frontend technology here]
+
+## Project Structure
+- Enrollora_Backend – Backend API
+- [Add your frontend folder name]
+
+## Getting Started
+
+### Backend Setup
+1. Clone the repository.
+2. Open the backend solution in Visual Studio.
+3. Configure the SQL Server connection string.
+4. Configure JWT settings.
+5. Apply database migrations.
+6. Run the backend API.
+
+### Clone the Repository
+```bash
+git clone https://github.com/pranavveer/Enrollora.git
+```
+
+## Author
+Developed as a student enrollment and management project.
+
 # EnrolloraUi
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.2.7.
