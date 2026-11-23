@@ -69,7 +69,12 @@ export const routes: Routes = [
           import('./features/enrollments/student/my-enrollments/my-enrollments').then(
             (m) => m.MyEnrollments,
           ),
-      },
+      },{
+  path: 'cancellation-requests',
+  loadComponent: () =>
+    import('./features/admin/cancellation-requests/cancellation-requests')
+      .then((m) => m.CancellationRequestsComponent),
+},
       {
         path: '',
         redirectTo: 'courses',

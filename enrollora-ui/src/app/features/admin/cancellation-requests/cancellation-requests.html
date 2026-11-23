@@ -1,0 +1,263 @@
+
+<div class="cancellation-page">
+
+  <div class="page-header">
+    <div>
+      <span class="eyebrow">ADMINISTRATION</span>
+      <h1>Cancellation Requests</h1>
+      <p>Review and manage student enrollment cancellation requests.</p>
+    </div>
+
+    <div class="total-card">
+      <span>Total Requests</span>
+      <strong>{{ totalRecords() }}</strong>
+    </div>
+  </div>
+
+  @if (successMessage()) {
+    <div class="success-message">{{ successMessage() }}</div>
+  }
+
+  @if (errorMessage()) {
+    <div class="error-message">{{ errorMessage() }}</div>
+  }
+
+  <section class="filter-card">
+
+    <div class="filter-fields">
+      <div class="filter-group search-group">
+        <label>Search</label>
+        <input
+          type="text"
+          [(ngModel)]="searchText"
+          placeholder="Student name or course name"
+          (keyup.enter)="applyFilters()"
+        />
+      </div>
+
+      <div class="filter-group">
+        <label>Status</label>
+        <select [(ngModel)]="selectedStatus">
+          <option value="">All statuses</option>
+          <option value="Pending">Pending</option>
+          <option value="Approved">Approved</option>
+          <option value="Rejected">Rejected</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="filter-actions">
+      <button class="btn-filter" (click)="applyFilters()">Apply Filters</button>
+      <button class="btn-clear" (click)="clearFilters()">Clear</button>
+    </div>
+
+  </section>
+
+  <section class="table-card">
+
+    <div class="table-heading">
+      <h2>Requests</h2>
+      <span>{{ totalRecords() }} records</span>
+    </div>
+
+    @if (isLoading()) {
+      <div class="state-message">Loading cancellation requests...</div>
+    }
+
+    @if (!isLoading() && requests().length === 0) {
+      <div class="state-message">
+        No cancellation requests found.
+      </div>
+    }
+
+    @if (!isLoading() && requests().length > 0) {
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Course</th>
+              <th>Requested On</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (request of requests(); track request.cancellationRequestId) {
+              <tr>
+                <td>
+                  <div class="student-name">{{ request.studentName }}</div>
+                  <div class="student-email">{{ request.studentEmail }}</div>
+                </td>
+
+                <td>
+                  <div class="course-name">{{ request.courseName }}</div>
+                  <small>Course ID: {{ request.courseId }}</small>
+                </td>
+
+                <td>
+                  {{ request.requestedAt | date:'dd MMM yyyy' }}
+                </td>
+
+                <td>
+                  <span
+                    class="status-badge"
+                    [ngClass]="request.status.toLowerCase()"
+                  >
+                    {{ request.status }}
+                  </span>
+                </td>
+
+                <td>
+                  <div class="action-buttons">
+
+                    <button
+                      class="btn-view"
+                      (click)="viewRequest(request)"
+                    >
+                      View
+                    </button>
+
+                    @if (request.status.toLowerCase() === 'pending') {
+                      <button
+                        class="btn-approve"
+                        [disabled]="isProcessing()"
+                        (click)="approve(request)"
+                      >
+                        Approve
+                      </button>
+
+                      <button
+                        class="btn-reject"
+                        [disabled]="isProcessing()"
+                        (click)="reject(request)"
+                      >
+                        Reject
+                      </button>
+                    }
+
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    <div class="pagination">
+      <button
+        (click)="previousPage()"
+        [disabled]="pageNumber() <= 1 || isLoading()"
+      >
+        Previous
+      </button>
+
+      <span>
+        Page {{ pageNumber() }} of {{ totalPages() || 1 }}
+      </span>
+
+      <button
+        (click)="nextPage()"
+        [disabled]="pageNumber() >= totalPages() || isLoading()"
+      >
+        Next
+      </button>
+    </div>
+
+  </section>
+
+  @if (showDetails() && selectedRequest()) {
+
+    <div class="modal-overlay" (click)="closeDetails()">
+
+      <div class="request-modal" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+          <div>
+            <h2>Cancellation Details</h2>
+            <p>Review the request before processing.</p>
+          </div>
+
+          <button class="modal-close" (click)="closeDetails()">×</button>
+        </div>
+
+        <div class="details-grid">
+
+          <div class="detail-item">
+            <label>Student Name</label>
+            <strong>{{ selectedRequest()!.studentName }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <label>Email</label>
+            <strong>{{ selectedRequest()!.studentEmail }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <label>Student ID</label>
+            <strong>{{ selectedRequest()!.studentId }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <label>Enrollment ID</label>
+            <strong>{{ selectedRequest()!.enrollmentId }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <label>Course</label>
+            <strong>{{ selectedRequest()!.courseName }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <label>Course ID</label>
+            <strong>{{ selectedRequest()!.courseId }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <label>Requested On</label>
+            <strong>
+              {{ selectedRequest()!.requestedAt | date:'dd MMM yyyy, hh:mm a' }}
+            </strong>
+          </div>
+
+          <div class="detail-item">
+            <label>Status</label>
+            <strong>{{ selectedRequest()!.status }}</strong>
+          </div>
+
+        </div>
+
+        <div class="reason-box">
+          <label>Cancellation Reason</label>
+          <p>{{ selectedRequest()!.reason || 'No reason provided.' }}</p>
+        </div>
+
+        @if (selectedRequest()!.status.toLowerCase() === 'pending') {
+          <div class="modal-actions">
+            <button
+              class="btn-reject"
+              [disabled]="isProcessing()"
+              (click)="reject(selectedRequest()!)"
+            >
+              Reject Request
+            </button>
+
+            <button
+              class="btn-approve"
+              [disabled]="isProcessing()"
+              (click)="approve(selectedRequest()!)"
+            >
+              Approve Request
+            </button>
+          </div>
+        }
+
+      </div>
+
+    </div>
+  }
+
+</div>
